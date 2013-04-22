@@ -306,3 +306,7 @@ TEST_PIN_UI = False
 # If True, only simulated payments can be processed. All other requests will
 # result in an error.
 ONLY_SIMULATIONS = False
+
+# Terms and privacy policy urls.
+PRIVACY_POLICY_URL = 'https://marketplace.firefox.com/privacy-policy'
+TERMS_URL = 'https://marketplace.firefox.com/terms-of-use'

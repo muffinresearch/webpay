@@ -8,7 +8,12 @@
 {% block extra_content %}
   <div id="login" class="message hidden">
     <h2>{{ _('Sign In') }}</h2>
-    <p>{{ _('Sign in to continue with the payment') }}</p>
     <a id="signin" class="sign-in" href="#">{{ _('Sign in') }}</a>
+    <p>
+    {%- trans terms_url=settings.TERMS_URL,
+              privacy_policy_url=settings.PRIVACY_POLICY_URL %}
+    By proceeding, you agree to Persona's <a href="{{ terms_url }}" target="_blank">Terms</a> and <a href="{{ privacy_policy_url }}" target="_blank">Privacy Policy</a>.
+    {% endtrans -%}
+    </p>
   </div>
 {% endblock %}

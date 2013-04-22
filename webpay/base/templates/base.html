@@ -18,8 +18,9 @@
   </head>
   <body
     {% block body_attrs %}{% endblock %}
-    data-privacy-policy="https://marketplace.firefox.com/privacy-policy"
-    data-terms-of-service="https://marketplace.firefox.com/terms-of-use"
+
+    data-privacy-policy="{{ settings.PRIVACY_POLICY_URL }}"
+    data-terms-of-service="{{ settings.TERMS_URL }}"
     data-unverified-issuer="{{ settings.BROWSERID_UNVERIFIED_ISSUER }}"
     data-logged-in-user="{{ session.get('logged_in_user', '') }}"
     data-reset-user-url="{{ url('auth.reset_user') }}"
