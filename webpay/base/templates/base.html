@@ -8,9 +8,14 @@
     {# L10n: Web Pay is what we call the payment server/flow. #}
     <title>{% block page_title %}{{ _('Web Pay') }}{% endblock %}</title>
 
-    {% block site_css %}
-      {{ css('pay/pay') }}
-    {% endblock %}
+    {# Served from commonplace #}
+    <link rel="stylesheet" href="/media/css/splash.styl.css">
+    <link rel="stylesheet" href="/media/css/normalize.styl.css">
+    <link rel="stylesheet" href="/media/css/util.styl.css">
+    <link rel="stylesheet" href="/media/css/fonts.styl.css">
+    <link rel="stylesheet" href="/media/css/messages.styl.css">
+    <link rel="stylesheet" href="/media/css/throbber.styl.css">
+    <link rel="stylesheet" href="/media/css/pay.styl.css">
 
     {% block extra_head %}
     {% endblock %}
@@ -25,6 +30,7 @@
     data-reset-user-url="{{ url('auth.reset_user') }}"
     data-denied-url="{{ url('auth.denied') }}"
     data-bango-logout-url="{{ settings.BANGO_LOGOUT_URL }}"
+    {#
     data-pin-num-chars-warning="{{ _('Pin must be 4 digits.') }}"
     data-pin-non-numeric-warning="{{ _('Pin can only contain digits.') }}"
     data-loading-msg="{{ _('Loading') }}"
@@ -32,28 +38,26 @@
     data-persona-msg="{{ _('Connecting to Persona') }}"
     data-complete-msg="{{ _('Payment complete') }}"
     data-cancelled-msg="{{ _('Payment cancelled') }}"
+    #}
     >
-    <section class="pay">
-      <div id="content">
-        {% block content %}{% endblock %}
-        {% if messages %}
-        <ul class="messages">
-           {% for message in messages %}
-           <li><p>{{ message }}</p></li>
-           {% endfor %}
-        </ul>
-        {% endif %}
-      </div>
-    </section>
+    <noscript><p>Sorry, you need JavaScript to use this site.</p></noscript>
 
-    <div id="progress" class="progress hidden">
-      <div class="throbber"></div>
-      <span class="txt"></span>
+    <div id="splash-overlay">
+      <div class="spinner"></div>
     </div>
 
+    <div id="progress"></div>
+    <div id="full-error"></div>
+
+    <main>
+      <div id="page" class="pay" role="main"></div>
+    </main>
+
     {% block site_js %}
-      <script src="{{ settings.BROWSERID_JS_URL }}"></script>
-      {{ js('pay') }}
+    <script src="{{ settings.BROWSERID_JS_URL }}"></script>
+    <script src="/media/js/l10n.js"></script>
+    <script data-main="/media/js/main" src="/media/js/lib/require.js"></script>
     {% endblock %}
+
   </body>
 </html>
