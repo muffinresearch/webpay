@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 
-from webpay.spa.views import index as spa_index
-from webpay.spa.views import wait_to_finish as spa_wait_to_finish
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -22,9 +20,23 @@ urlpatterns = patterns('',
 )
 
 if settings.SPA_ENABLE_URLS:
+
+    from webpay.spa.views import index as spa_index
+    from webpay.spa.views import complete_payment
+    from webpay.spa.views import payment_error
+    from webpay.spa.views import payment_failure
+
     urlpatterns += patterns('',
-        url(r'^mozpay/spa/(?P<provider_name>[^/]+)/wait-to-finish',
-            spa_wait_to_finish, name='spa.wait_to_finish'),
+        # The callback url for payment completion/success. Called by providers.
+        url(r'^mozpay/spa/provider/(?P<provider_name>[a-z][^/]+)/complete-payment$',
+            complete_payment, name='spa.complete_payment'),
+        # The callback url for payment errors. Called by providers.
+        url(r'^mozpay/spa/provider/(?P<provider_name>[a-z][^/]+)/payment-error$',
+            payment_error, name='spa.payment_error'),
+        # A generic payment failure view.
+        url(r'^mozpay/spa/provider/(?P<provider_name>[a-z][^/]+)/payment-failure/(?P<error_code>[A-Z_]+)$',
+            payment_failure, name='spa.payment_failure'),
+        # All the other SPA urls.
         url(r'^mozpay/spa/(?:' + '|'.join(settings.SPA_URLS) + ')$',
             spa_index, name='spa.index'),
         url(r'^mozpay/v1/api/', include('webpay.api.urls', namespace='api'))

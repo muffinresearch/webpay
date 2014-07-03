@@ -357,6 +357,26 @@ class TestBango(TestCase):
     def start(self):
         return self.provider.start_transaction(*range(0, 9))
 
+    @test.utils.override_settings(SPA_ENABLE=False)
+    def test_get_success_url(self):
+        eq_(self.provider.provider.get_success_url(),
+            reverse('bango.success'))
+
+    @test.utils.override_settings(SPA_ENABLE=True)
+    def test_get_success_url_spa(self):
+        eq_(self.provider.provider.get_success_url(),
+            reverse('spa.complete_payment', args=['bango']))
+
+    @test.utils.override_settings(SPA_ENABLE=False)
+    def test_get_error_url(self):
+        eq_(self.provider.provider.get_error_url(),
+            reverse('bango.error'))
+
+    @test.utils.override_settings(SPA_ENABLE=True)
+    def test_get_error_url_spa(self):
+        eq_(self.provider.provider.get_error_url(),
+            reverse('spa.payment_error', args=['bango']))
+
     def test_create_without_bango_seller(self):
         self.slumber.generic.seller.get_object.return_value = {
             'bango': None, 'resource_pk': '1',
@@ -483,6 +503,26 @@ class TestReferenceProvider(ProviderTestCase):
     def setUp(self):
         super(TestReferenceProvider, self).setUp()
         self.provider = ProviderHelper('reference', slumber=self.slumber)
+
+    @test.utils.override_settings(SPA_ENABLE=False)
+    def test_get_success_url_name(self):
+        eq_(self.provider.provider.get_success_url_name(),
+            'provider.success')
+
+    @test.utils.override_settings(SPA_ENABLE=True)
+    def test_get_success_url_name_spa(self):
+        eq_(self.provider.provider.get_success_url_name(),
+            'spa.complete_payment')
+
+    @test.utils.override_settings(SPA_ENABLE=False)
+    def test_get_error_url_name(self):
+        eq_(self.provider.provider.get_error_url_name(),
+            'provider.error')
+
+    @test.utils.override_settings(SPA_ENABLE=True)
+    def test_get_error_url_name_spa(self):
+        eq_(self.provider.provider.get_error_url_name(),
+            'spa.payment_error')
 
     def test_start_with_existing_prod(self):
         self.slumber.provider.reference.transactions.post.return_value = {
@@ -616,14 +656,14 @@ class TestBoku(ProviderTestCase):
         return super(TestBoku, self).configure(**kw)
 
     @test.utils.override_settings(SPA_ENABLE=False)
-    def test_get_finish_url_name(self):
-        eq_(self.provider.provider.get_finish_url_name(),
+    def test_get_forward_url_name(self):
+        eq_(self.provider.provider.get_forward_url_name(),
             'provider.wait_to_finish')
 
     @test.utils.override_settings(SPA_ENABLE=True)
-    def test_get_finish_url_spa(self):
-        eq_(self.provider.provider.get_finish_url_name(),
-            'spa.wait_to_finish')
+    def test_get_forward_url_spa(self):
+        eq_(self.provider.provider.get_forward_url_name(),
+            'spa.complete_payment')
 
     def test_start_transaction(self):
         boku_pay_url = 'https://site/buy'

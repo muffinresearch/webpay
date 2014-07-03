@@ -571,7 +571,7 @@ SPA_URLS = [
     'login',
     'reset-pin',
     'reset-start',
-    'wait-for-tx',
+    'wait-to-start',
     'was-locked'
 ]
 SPA_USE_MIN_JS = True

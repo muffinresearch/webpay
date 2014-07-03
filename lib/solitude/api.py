@@ -553,6 +553,18 @@ class ReferenceProvider(PayProvider):
     """
     name = 'reference'
 
+    def get_success_url_name(self):
+        if settings.SPA_ENABLE and settings.SPA_ENABLE_URLS:
+            return 'spa.complete_payment'
+        else:
+            return 'provider.success'
+
+    def get_error_url_name(self):
+        if settings.SPA_ENABLE and settings.SPA_ENABLE_URLS:
+            return 'spa.payment_error'
+        else:
+            return 'provider.error'
+
     def create_transaction(self, generic_seller, generic_product,
                            provider_product, provider_seller_uuid,
                            product_name, transaction_uuid,
@@ -582,9 +594,9 @@ class ReferenceProvider(PayProvider):
             'callback_error_url': absolutify(
                 reverse('pay.callback_error_url')),
             'ext_transaction_id': transaction_uuid,
-            'success_url': absolutify(reverse('provider.success',
+            'success_url': absolutify(reverse(self.get_success_url_name(),
                                       args=[self.name])),
-            'error_url': absolutify(reverse('provider.error',
+            'error_url': absolutify(reverse(self.get_error_url_name(),
                                     args=[self.name])),
             'product_image_url': icon_url,
         })
@@ -644,9 +656,9 @@ class BokuProvider(PayProvider):
         # Boku does not have a products API the way Bango does.
         return None
 
-    def get_finish_url_name(self):
+    def get_forward_url_name(self):
         if settings.SPA_ENABLE and settings.SPA_ENABLE_URLS:
-            return 'spa.wait_to_finish'
+            return 'spa.complete_payment'
         else:
             return 'provider.wait_to_finish'
 
@@ -686,7 +698,7 @@ class BokuProvider(PayProvider):
                 .format(mcc=mcc, mnc=mnc, r=mcc_region))
 
         provider_trans = self.api.transactions.post({
-            'forward_url': absolutify(reverse(self.get_finish_url_name(),
+            'forward_url': absolutify(reverse(self.get_forward_url_name(),
                                               args=[self.name])),
             'callback_url': absolutify(reverse('provider.notification',
                                                args=[self.name])),
@@ -802,6 +814,18 @@ class BangoProvider(PayProvider):
                 .format(sel=provider_generic_seller['resource_pk']))
         return provider_generic_seller['bango']
 
+    def get_success_url(self):
+        if settings.SPA_ENABLE and settings.SPA_ENABLE_URLS:
+            return reverse('spa.complete_payment', args=[self.name])
+        else:
+            return reverse('bango.success')
+
+    def get_error_url(self):
+        if settings.SPA_ENABLE and settings.SPA_ENABLE_URLS:
+            return reverse('spa.payment_error', args=[self.name])
+        else:
+            return reverse('bango.error')
+
     def create_transaction(self, generic_seller, generic_product,
                            provider_product, provider_seller_uuid,
                            product_name, transaction_uuid,
@@ -811,8 +835,8 @@ class BangoProvider(PayProvider):
                  .format(tr=transaction_uuid,
                          pr=provider_product['resource_uri']))
 
-        redirect_url_onsuccess = absolutify(reverse('bango.success'))
-        redirect_url_onerror = absolutify(reverse('bango.error'))
+        redirect_url_onsuccess = absolutify(self.get_success_url())
+        redirect_url_onerror = absolutify(self.get_error_url())
 
         # This API call also creates a generic
         # transaction automatically.
