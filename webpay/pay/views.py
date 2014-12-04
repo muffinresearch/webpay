@@ -161,7 +161,7 @@ def index(request):
     """Hand off either lobby or serving Spartacus depending on settings."""
     if settings.SPA_ENABLE:
         from webpay.spa.views import index as spa_index
-        return spa_index(request)
+        return spa_index(request, start_view='index')
     else:
         return lobby(request)
 

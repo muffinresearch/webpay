@@ -15,11 +15,15 @@ class TestSpaViews(test.TestCase):
     def test_index(self):
         res = self.client.get(reverse('pay.lobby'))
         eq_(res.status_code, 200)
+        doc = pq(res.content)
+        eq_(doc('body').attr('data-start-view'), 'index')
         self.assertTemplateUsed(res, 'spa/index.html')
 
     def test_enter_pin(self):
         res = self.client.get(reverse('spa:index', args=['enter-pin']))
         eq_(res.status_code, 200)
+        doc = pq(res.content)
+        eq_(doc('body').attr('data-start-view'), '')
         self.assertTemplateUsed(res, 'spa/index.html')
 
     def test_reversal(self):
